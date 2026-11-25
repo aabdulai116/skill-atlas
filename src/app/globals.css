@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0b0d12;
+  --foreground: #e4e4e7;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+@layer components {
+  .btn-ghost {
+    @apply rounded-md border border-white/10 px-2.5 py-1 text-xs text-zinc-300 transition hover:border-white/20 hover:bg-white/5 hover:text-white;
+  }
+  .btn-primary {
+    @apply rounded-md bg-sky-500 px-3 py-1.5 text-sm font-medium text-black transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .chip {
+    @apply rounded-full border border-white/10 px-2.5 py-1 text-xs text-zinc-400 transition hover:text-white;
+  }
+  .input {
+    @apply rounded-md border border-white/10 bg-[#11141b] px-2 py-1.5 text-sm text-zinc-100 outline-none focus:border-sky-400;
+  }
+}
+
+/* React Flow dark overrides */
+.react-flow__minimap {
+  background: #11141b;
+}
+.react-flow__controls-button {
+  background: #161a23;
+  border-bottom-color: #232836;
+  fill: #d4d4d8;
+  color: #d4d4d8;
+}
+.react-flow__controls-button:hover {
+  background: #1f2430;
+}
+.react-flow__attribution {
+  background: transparent;
+}
