@@ -39,6 +39,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [storageError, setStorageError] = useState(false);
   const loaded = useRef(false);
+  const fromStore = useRef<ProgressState | null>(null);
 
   useEffect(() => {
     store
@@ -48,11 +49,14 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
         loaded.current = true;
         setReady(true);
       });
-    return store.subscribe?.(setState);
+    return store.subscribe?.((next) => {
+      fromStore.current = next;
+      setState(next);
+    });
   }, [store]);
 
   useEffect(() => {
-    if (!loaded.current) return;
+    if (!loaded.current || state === fromStore.current) return;
     store.save(state).then(
       () => setStorageError(false),
       () => setStorageError(true),
