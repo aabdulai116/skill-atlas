@@ -50,7 +50,7 @@ export function PlanView() {
               value={hoursPerWeek}
               onChange={(e) => {
                 const v = Number(e.target.value);
-                if (v > 0) updateSettings({ hoursPerWeek: Math.min(80, v) });
+                if (v >= 1) updateSettings({ hoursPerWeek: Math.min(80, v) });
               }}
               className="input w-24"
             />
