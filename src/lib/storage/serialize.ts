@@ -34,12 +34,12 @@ export function parseProgress(raw: unknown): ProgressState {
   }
   const settings = isRecord(raw.settings) ? raw.settings : {};
   const selectedPath =
-    typeof settings.selectedPath === "string" && settings.selectedPath in PATH_BY_ID
+    typeof settings.selectedPath === "string" && Object.hasOwn(PATH_BY_ID, settings.selectedPath)
       ? (settings.selectedPath as PathId)
       : empty.settings.selectedPath;
   const hoursPerWeek =
     isNumber(settings.hoursPerWeek) && settings.hoursPerWeek > 0
-      ? settings.hoursPerWeek
+      ? Math.min(80, Math.max(1, settings.hoursPerWeek))
       : empty.settings.hoursPerWeek;
   const targetDate =
     typeof settings.targetDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(settings.targetDate)
