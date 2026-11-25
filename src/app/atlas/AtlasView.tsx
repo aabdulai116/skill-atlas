@@ -19,10 +19,11 @@ function matches(query: string, name: string, domain: string) {
 export function AtlasView() {
   const { state, statuses, updateSettings } = useProgress();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [focusId, setFocusId] = useState<string | null>(null);
+  const [focusRequest, setFocusRequest] = useState<{ id: string } | null>(null);
   const [query, setQuery] = useState("");
   const [domains, setDomains] = useState<Set<DomainId>>(new Set());
   const searchRef = useRef<HTMLInputElement>(null);
+  const graphAreaRef = useRef<HTMLDivElement>(null);
   const path = PATH_BY_ID[state.settings.selectedPath];
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export function AtlasView() {
 
   const focus = useCallback((id: string) => {
     setSelectedId(id);
-    setFocusId(id);
+    setFocusRequest({ id });
   }, []);
 
   const toggleDomain = (d: DomainId) =>
@@ -151,15 +152,16 @@ export function AtlasView() {
           )}
         </div>
       </div>
-      <div className="relative flex-1">
+      <div ref={graphAreaRef} className="relative flex-1 bg-background">
         <ReactFlowProvider>
           <SkillGraph
             checked={state.checked}
             statuses={statuses}
             visible={visible}
             selectedId={selectedId}
-            focusId={focusId}
+            focus={focusRequest}
             onSelect={setSelectedId}
+            fullscreenRef={graphAreaRef}
           />
         </ReactFlowProvider>
         {selectedId && <SkillPanel skillId={selectedId} onClose={() => setSelectedId(null)} onSelect={focus} />}
