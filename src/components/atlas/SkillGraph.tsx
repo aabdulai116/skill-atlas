@@ -27,31 +27,34 @@ interface SkillGraphProps {
   statuses: Record<string, SkillStatus>;
   visible: Set<string>;
   selectedId: string | null;
-  focusId: string | null;
+  focus: { id: string } | null;
   onSelect: (id: string | null) => void;
+  /** Element to put in fullscreen (defaults to the graph itself). */
+  fullscreenRef?: React.RefObject<HTMLElement | null>;
 }
 
-export function SkillGraph({ checked, statuses, visible, selectedId, focusId, onSelect }: SkillGraphProps) {
+export function SkillGraph({ checked, statuses, visible, selectedId, focus, onSelect, fullscreenRef }: SkillGraphProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [fullscreen, setFullscreen] = useState(false);
   const { setCenter } = useReactFlow();
 
   useEffect(() => {
-    const onChange = () => setFullscreen(document.fullscreenElement === wrapperRef.current);
+    const onChange = () =>
+      setFullscreen(document.fullscreenElement === (fullscreenRef?.current ?? wrapperRef.current));
     document.addEventListener("fullscreenchange", onChange);
     return () => document.removeEventListener("fullscreenchange", onChange);
-  }, []);
+  }, [fullscreenRef]);
 
   useEffect(() => {
-    if (!focusId) return;
-    const pos = LAYOUT.positions[focusId];
+    if (!focus) return;
+    const pos = LAYOUT.positions[focus.id];
     if (pos) void setCenter(pos.x + NODE_WIDTH / 2, pos.y + NODE_HEIGHT / 2, { zoom: 1.1, duration: 500 });
-  }, [focusId, setCenter]);
+  }, [focus, setCenter]);
 
   const toggleFullscreen = useCallback(() => {
     if (document.fullscreenElement) void document.exitFullscreen();
-    else void wrapperRef.current?.requestFullscreen();
-  }, []);
+    else void (fullscreenRef?.current ?? wrapperRef.current)?.requestFullscreen();
+  }, [fullscreenRef]);
 
   const related = useMemo(() => {
     if (!selectedId) return new Set<string>();
