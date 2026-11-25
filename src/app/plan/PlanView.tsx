@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { PATH_BY_ID } from "@/data/paths";
 import { SKILL_BY_ID, SKILLS } from "@/data/skills";
 import { daysBetween, fromDateKey } from "@/lib/dates";
@@ -15,6 +15,7 @@ export function PlanView() {
   const { state, updateSettings } = useProgress();
   const { selectedPath, hoursPerWeek, targetDate } = state.settings;
   const path = PATH_BY_ID[selectedPath];
+  const [hoursDraft, setHoursDraft] = useState<string | null>(null);
 
   const plan = useMemo(
     () =>
@@ -47,11 +48,13 @@ export function PlanView() {
               min={1}
               max={80}
               aria-label="Hours per week"
-              value={hoursPerWeek}
+              value={hoursDraft ?? hoursPerWeek}
               onChange={(e) => {
+                setHoursDraft(e.target.value);
                 const v = Number(e.target.value);
                 if (v >= 1) updateSettings({ hoursPerWeek: Math.min(80, v) });
               }}
+              onBlur={() => setHoursDraft(null)}
               className="input w-24"
             />
           </label>
