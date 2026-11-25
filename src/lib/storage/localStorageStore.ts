@@ -24,4 +24,17 @@ export class LocalStorageStore implements ProgressStore {
   async clear(): Promise<void> {
     window.localStorage.removeItem(this.key);
   }
+
+  subscribe(onChange: (state: ProgressState) => void): () => void {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== this.key) return;
+      try {
+        onChange(e.newValue ? parseProgress(JSON.parse(e.newValue)) : createEmptyProgress());
+      } catch {
+        // Ignore malformed writes from other tabs.
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }
 }

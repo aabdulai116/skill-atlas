@@ -27,6 +27,8 @@ export interface ProgressStore {
   load(): Promise<ProgressState>;
   save(state: ProgressState): Promise<void>;
   clear(): Promise<void>;
+  /** Optional: notifies when the stored state is changed elsewhere (e.g. another tab). */
+  subscribe?(onChange: (state: ProgressState) => void): () => void;
 }
 
 export function createEmptyProgress(): ProgressState {
