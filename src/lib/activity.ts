@@ -69,6 +69,6 @@ export function recruitingCountdown(
   const daysLeft = daysBetween(today, fromDateKey(targetDate));
   const weeksLeft = Math.max(0, Math.ceil(daysLeft / 7));
   const skillsPerWeek =
-    skillsLeft === 0 ? 0 : weeksLeft === 0 ? Number.POSITIVE_INFINITY : skillsLeft / weeksLeft;
+    skillsLeft === 0 ? 0 : daysLeft <= 0 ? Number.POSITIVE_INFINITY : skillsLeft / (daysLeft / 7);
   return { daysLeft, weeksLeft, skillsLeft, skillsPerWeek };
 }

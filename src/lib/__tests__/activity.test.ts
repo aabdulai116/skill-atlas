@@ -41,6 +41,12 @@ describe("recruitingCountdown", () => {
     expect(c.skillsPerWeek).toBe(2);
   });
 
+  it("uses exact days for the pace when the deadline is not a whole number of weeks", () => {
+    const c = recruitingCountdown("2026-01-22", today, 8);
+    expect(c.weeksLeft).toBe(2);
+    expect(c.skillsPerWeek).toBe(7);
+  });
+
   it("returns Infinity pace when the date has passed", () => {
     const c = recruitingCountdown("2026-01-01", today, 3);
     expect(c.weeksLeft).toBe(0);
