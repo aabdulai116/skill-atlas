@@ -63,7 +63,8 @@ export function generatePlan({
   if (!(hoursPerWeek > 0)) throw new Error("hoursPerWeek must be greater than 0.");
   const byId = Object.fromEntries(skills.map((s) => [s.id, s]));
   const onPath = new Set(pathSkillIds);
-  const needed = new Set([...pathSkillIds, ...transitivePrerequisites(pathSkillIds, byId)]);
+  const remainingPath = pathSkillIds.filter((id) => byId[id] && !isCompleted(byId[id], checked));
+  const needed = new Set([...remainingPath, ...transitivePrerequisites(remainingPath, byId)]);
   const remaining = skills
     .filter((s) => needed.has(s.id) && !isCompleted(s, checked))
     .map((s) => s.id);

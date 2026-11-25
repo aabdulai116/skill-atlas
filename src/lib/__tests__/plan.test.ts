@@ -92,6 +92,11 @@ describe("generatePlan", () => {
     ]);
   });
 
+  it("skips prerequisites that only serve completed path skills", () => {
+    const plan = generatePlan({ pathSkillIds: ["c"], skills, checked: { c: ALL }, hoursPerWeek: 40, startDate: start });
+    expect(plan.order).toEqual([]);
+  });
+
   it("returns an empty plan when the path is complete", () => {
     const plan = generatePlan({ pathSkillIds: ["a"], skills, checked: { a: ALL }, hoursPerWeek: 10, startDate: start });
     expect(plan.weeks).toEqual([]);
