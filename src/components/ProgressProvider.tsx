@@ -14,6 +14,8 @@ import {
 interface ProgressContextValue {
   state: ProgressState;
   ready: boolean;
+  /** True when progress could not be loaded from or saved to the store. */
+  storageError: boolean;
   statuses: Record<string, SkillStatus>;
   toggleSubtopic: (skillId: string, subtopic: string) => void;
   setSkillComplete: (skillId: string, complete: boolean) => void;
@@ -35,18 +37,26 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   const store = useMemo(() => createProgressStore(), []);
   const [state, setState] = useState<ProgressState>(createEmptyProgress);
   const [ready, setReady] = useState(false);
+  const [storageError, setStorageError] = useState(false);
   const loaded = useRef(false);
 
   useEffect(() => {
-    store.load().then((s) => {
-      setState(s);
-      loaded.current = true;
-      setReady(true);
-    });
+    store
+      .load()
+      .then(setState, () => setStorageError(true))
+      .finally(() => {
+        loaded.current = true;
+        setReady(true);
+      });
+    return store.subscribe?.(setState);
   }, [store]);
 
   useEffect(() => {
-    if (loaded.current) void store.save(state);
+    if (!loaded.current) return;
+    store.save(state).then(
+      () => setStorageError(false),
+      () => setStorageError(true),
+    );
   }, [state, store]);
 
   const toggleSubtopic = useCallback((skillId: string, subtopic: string) => {
@@ -93,6 +103,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     () => ({
       state,
       ready,
+      storageError,
       statuses,
       toggleSubtopic,
       setSkillComplete,
@@ -101,7 +112,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       replaceState,
       reset,
     }),
-    [state, ready, statuses, toggleSubtopic, setSkillComplete, setNote, updateSettings, replaceState, reset],
+    [state, ready, storageError, statuses, toggleSubtopic, setSkillComplete, setNote, updateSettings, replaceState, reset],
   );
 
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;

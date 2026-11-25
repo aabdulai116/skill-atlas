@@ -6,7 +6,7 @@ import { toDateKey } from "@/lib/dates";
 import { useProgress } from "./ProgressProvider";
 
 export function BackupMenu() {
-  const { state, replaceState, reset } = useProgress();
+  const { state, storageError, replaceState, reset } = useProgress();
   const fileRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -36,6 +36,11 @@ export function BackupMenu() {
 
   return (
     <div className="flex items-center gap-2 text-sm">
+      {storageError && (
+        <span role="alert" className="text-xs text-amber-400" title="Browser storage is unavailable. Export a backup to keep your progress.">
+          Progress isn&apos;t being saved
+        </span>
+      )}
       {message && <span className="text-xs text-zinc-400">{message}</span>}
       <button onClick={onExport} className="btn-ghost">
         Export
